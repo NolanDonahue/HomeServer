@@ -21,3 +21,12 @@ Home Server: Dell Vostro 3670
 -Run ssh-config and install your public key under a .ssh file in your user
 -type $env:USERPROFILE\.ssh\id_rsa.pub | ssh <###USER###>@<###IP ADDRESS###> "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
   Replace <###USER###> and <###IP ADDRESS###>
+
+Using Restic to backup the testbench for easier restoration of botched ideas
+https://www.youtube.com/watch?v=HixCvh8I4LA
+-sudo apt install restic
+-mkdir /home/user/backup-repository
+-restic init -r /home/user/backup-repository/
+  Save password for later use
+
+Learning the basics of Docker
