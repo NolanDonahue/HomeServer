@@ -25,8 +25,17 @@ Home Server: Dell Vostro 3670
 Using Restic to backup the testbench for easier restoration of botched ideas
 https://www.youtube.com/watch?v=HixCvh8I4LA
 -sudo apt install restic
--mkdir /home/user/backup-repository
--restic init -r /home/user/backup-repository/
+-sudo mkdir /home/user/backup-repository
+-sudo restic init -r /home/user/backup-repository/
   Save password for later use
+-sudo restic -r /home/user/backup-respository/ backup / --exclude="/home/nolan/backup-repository/"
+  Create a backup of the entire directory excluding other backups
+ -sudo restic -r /home/user/backup-repository/ snapshots
+   View prior backups
+  -sudo restic -r /home/user/backups-repository/ restore latest --target /home/user/directory to be restored
+  -sudo restic -r /home/user/backup-repository forget latest
 
 Learning the basics of Docker
+
+-Install Docker
+  https://docs.docker.com/engine/install/ubuntu/
