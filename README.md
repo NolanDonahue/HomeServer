@@ -54,8 +54,21 @@ Samba via Docker
   docker compose up
     run the file
 Build a VM to house the samba container
-  https://www.cherryservers.com/blog/install-kvm-ubuntu
-  https://www.youtube.com/watch?v=KCLaVlwfOHM
+  Install -  https://www.cherryservers.com/blog/install-kvm-ubuntu
+  Install - https://www.youtube.com/watch?v=KCLaVlwfOHM
+  Virsh create a VM - https://www.thegeekstuff.com/2014/10/linux-kvm-create-guest-vm/
+    sudo virt-install \
+  --name testVM \
+  --ram 2048 \
+  --vcpus 2 \
+  --disk path=/var/lib/libvirt/images/testVM.qcow2,size=50,format=qcow2 \
+  --network bridge=br0 \
+  --location /home/nolan/share/ubuntu-24.04.2-live-server-amd64.iso \
+  --os-variant ubuntu24.04 \
+  --console pty,target_type=serial \
+  --extra-args "console=ttyS0,115200n8" \
+  --noautoconsole \
+  --virt-type kvm
 
 Check Battery Life on Laptop
 in the bottom of .bashrc (using nano) add in this alias
