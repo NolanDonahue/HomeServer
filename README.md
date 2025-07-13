@@ -54,6 +54,8 @@ Samba via Docker
   docker compose up
     run the file
 Build a VM to house the samba container
+  https://www.cherryservers.com/blog/install-kvm-ubuntu
+  https://www.youtube.com/watch?v=KCLaVlwfOHM
 
 Check Battery Life on Laptop
 in the bottom of .bashrc (using nano) add in this alias
