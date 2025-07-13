@@ -1,6 +1,8 @@
 # HomeServer
 Project for creating a home server
 
+List of Ideas: https://github.com/awesome-selfhosted/awesome-selfhosted?tab=readme-ov-file#analytics
+
 Hardware
 Test Bench: ACER Swift 5
 Home Server: Dell Vostro 3670
@@ -39,3 +41,19 @@ Learning the basics of Docker
 
 -Install Docker
   https://docs.docker.com/engine/install/ubuntu/
+
+Check Battery Life on Laptop
+in the bottom of .bashrc (using nano) add in this alias
+alias bat='upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep -E "time full|percentage"'
+
+Fileserver - SMB for interfacing with Windows Computers and Android Phones
+  https://www.youtube.com/watch?v=y7esIzzkzSE
+    THIS VIDEO WORKS ^^^
+    THIS VIDEO DOESNT I COULDNT FIX IT \/
+  https://www.youtube.com/watch?v=2YQoAWQY6Uo
+  Problem: Permissions to be able to interface with the fileshare from a windows computer not working
+    Solution: You can't add a user... You have to create a group and add the user to the group that is whitelisted
+    sudo groupadd editors
+    sudo usermod -a -G editors john
+    sudo chown -R root:editors /path/to/your/share
+    sudo chmod -R 2770 /path/to/your/share
