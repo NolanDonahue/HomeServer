@@ -40,7 +40,20 @@ https://www.youtube.com/watch?v=HixCvh8I4LA
 Learning the basics of Docker
 
 -Install Docker
-  https://docs.docker.com/engine/install/ubuntu/
+  https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
+-The basics
+  https://nerdyarticles.com/docker-101/
+Bridge vs Host Network - Starting with bridge may try to implement host for the file sharing portion
+Perisistent storagE? Is it needed for all the apps? Probably for most
+  Versatile option with named volumes for file sharing
+.env - key information reused in all containers
+  more secure information
+  Never put into a repository
+Samba via Docker
+  https://github.com/dockur/samba
+  docker compose up
+    run the file
+Build a VM to house the samba container
 
 Check Battery Life on Laptop
 in the bottom of .bashrc (using nano) add in this alias
@@ -57,3 +70,9 @@ Fileserver - SMB for interfacing with Windows Computers and Android Phones
     sudo usermod -a -G editors john
     sudo chown -R root:editors /path/to/your/share
     sudo chmod -R 2770 /path/to/your/share
+
+OpenVPN - Using SAMBA fileshare to share the configuration file
+  [https://www.youtube.com/watch?v=12ccTRzLwAc](https://documentation.ubuntu.com/server/how-to/security/install-openvpn/)
+  sudo -s
+    Used to navigate to easy-rsa in the /etc/openvpn because it is a restricted directory
+  
