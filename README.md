@@ -96,4 +96,4 @@ OpenVPN - Using SAMBA fileshare to share the configuration file
 -------------KVM is dumb switching to proxmox----------------------
 https://www.proxmox.com/en/products/proxmox-virtual-environment/get-started
 https://www.youtube.com/watch?v=5j0Zb6x_hOk
-
+  KVM does not like wifi... just use ethernet or it is miserable
