@@ -23,6 +23,8 @@ Home Server: Dell Vostro 3670
 -Run ssh-config and install your public key under a .ssh file in your user
 -type $env:USERPROFILE\.ssh\id_rsa.pub | ssh <###USER###>@<###IP ADDRESS###> "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
   Replace <###USER###> and <###IP ADDRESS###>
+-Move the bootup script to the server and then run it
+-scp /path/to/local/file.txt username@remote_host_ip:/path/to/remote/directory/
 
 Using Restic to backup the testbench for easier restoration of botched ideas
 https://www.youtube.com/watch?v=HixCvh8I4LA
@@ -97,3 +99,4 @@ OpenVPN - Using SAMBA fileshare to share the configuration file
 https://www.proxmox.com/en/products/proxmox-virtual-environment/get-started
 https://www.youtube.com/watch?v=5j0Zb6x_hOk
   KVM does not like wifi... just use ethernet or it is miserable
+Proxmox breaks when on a community network, must wait to use until I have my own router/modem
