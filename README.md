@@ -20,13 +20,20 @@ Home Server: Dell Vostro 3670
 -sudo systemctl start ssh
 -ip a (find IP address)
 --ON MASTER COMPUTER
+**DEPRECATED BECUSE VSCODE IS BETTER**
 -Open CMD Prompt
 -Run ssh-config and install your public key under a .ssh file in your user
 -type $env:USERPROFILE\.ssh\id_rsa.pub | ssh <###USER###>@<###IP ADDRESS###> "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
   delete known hosts if using a new image on an old ip
   Replace <###USER###> and <###IP ADDRESS###>
--Move the bootup script to the server and then run it
--scp /path/to/local/file.txt username@remote_host_ip:/path/to/remote/directory/
+
+#SSH VIA GITHUB/VSCODE#
+Generate a public SSH key and upload it to your github account
+On flashing Ubuntu Server connect your GitHub SSH key for use
+Enable ssh with systemctl
+Open VSCode and install the remote connections extension
+Open Remote Connections and Connect to your host
+Run bootup script from VSCode
 
 Using Restic to backup the testbench for easier restoration of botched ideas
 https://www.youtube.com/watch?v=HixCvh8I4LA
@@ -56,7 +63,9 @@ Perisistent storagE? Is it needed for all the apps? Probably for most
 Samba via Docker
   https://github.com/dockur/samba
   docker compose up
-    run the file
+    run the file with docker run -d to keep your terminal free
+
+##DEPRECEATED because is really hard##
 Build a VM to house the samba container
   Install -  https://www.cherryservers.com/blog/install-kvm-ubuntu
   Install - https://www.youtube.com/watch?v=KCLaVlwfOHM
@@ -91,6 +100,7 @@ Fileserver - SMB for interfacing with Windows Computers and Android Phones
     sudo usermod -a -G editors john
     sudo chown -R root:editors /path/to/your/share
     sudo chmod -R 2770 /path/to/your/share
+  Access fileshare \\your.ip.here.123\
 
 OpenVPN - Using SAMBA fileshare to share the configuration file
   [https://www.youtube.com/watch?v=12ccTRzLwAc](https://documentation.ubuntu.com/server/how-to/security/install-openvpn/)
