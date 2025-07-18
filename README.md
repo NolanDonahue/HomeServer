@@ -16,12 +16,14 @@ Home Server: Dell Vostro 3670
 -Enter the BIOS of the server and set the thumbdrive to be the first to execute, install Ubuntu Server and download OpenSSH
 -Open SSH
 --ON SLAVE COMPUTER
--Install Net-Applcations
--Run ifconfig and not IP Address
+-sudo systemctl enable ssh
+-sudo systemctl start ssh
+-ip a (find IP address)
 --ON MASTER COMPUTER
 -Open CMD Prompt
 -Run ssh-config and install your public key under a .ssh file in your user
 -type $env:USERPROFILE\.ssh\id_rsa.pub | ssh <###USER###>@<###IP ADDRESS###> "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+  delete known hosts if using a new image on an old ip
   Replace <###USER###> and <###IP ADDRESS###>
 -Move the bootup script to the server and then run it
 -scp /path/to/local/file.txt username@remote_host_ip:/path/to/remote/directory/
