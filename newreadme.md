@@ -40,5 +40,5 @@ Samba File Share Container
   https://github.com/dockur/samba
   Add the compose iformation to your docker-compose.yml and then run it with sudo docker compose up -d
 
-OpenVPN
-  https://github.com/kylemanna/docker-openvpn?tab=readme-ov-file
+Wireguard
+  https://github.com/wg-easy/wg-easy
