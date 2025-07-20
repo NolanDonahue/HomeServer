@@ -112,3 +112,7 @@ https://www.proxmox.com/en/products/proxmox-virtual-environment/get-started
 https://www.youtube.com/watch?v=5j0Zb6x_hOk
   KVM does not like wifi... just use ethernet or it is miserable
 Proxmox breaks when on a community network, must wait to use until I have my own router/modem
+
+----
+Bypass CGNAT to port forward your server
+https://www.youtube.com/watch?v=7TOwr1Hs9fk&t=28s
