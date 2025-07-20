@@ -1,0 +1,10 @@
+# Read more about SSH config files: https://linux.die.net/man/5/ssh_config
+Host UbuntuServer
+    HostName 192.###.#.##
+    User <user>
+
+Host ubuntu-server-direct
+    HostName vpn.<name>.org
+    Port <####>
+    User <user>
+    IdentityFile ~/.ssh/<id_rsa_yourkey>
