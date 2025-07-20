@@ -315,3 +315,6 @@ Ping Server: Open PowerShell/CMD and ping 10.0.0.1 (your VPN server's internal I
 Access Samba Share: Access your share via its VPN IP: \\10.0.0.1\yoursharename.
 
 SSH to Server: SSH to your VM using its VPN IP (10.0.0.1) or its internal LAN IP (192.168.x.x).
+
+Once this is complete it will break your connection with local servers and you need to edit the tunnel and change Allowed IPs
+AllowedIPs = 10.0.0.0/24, 192.168.1.0/24, 10.0.0.1/32 # Routes for VPN tunnel, home network, and VPN server's specific internal IP
