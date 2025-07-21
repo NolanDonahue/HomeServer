@@ -1,0 +1,130 @@
+I have a TP Link Ax55 AX3000 using a 400mb/s connection for internet with administrative access set to dynamic IP.
+
+I have a domain via NameCheap.
+
+I have an Ryzen 5 5600G, 7800xt, 32GB DDR4, 1.5TB NVME M.2 on a Windows OS as my working desktop which I use to SSH into my servers. It is connected via Wifi.
+
+I have a Acer Swift 5 with 8gb ram, 256gb SSD, i7 which I use as a testbench before rolling out my server. It is connected via a usb to ethernet adapter.
+
+I have a Dell Vostro 3670 with i7 8th generation, 16gb ram, .5tb NVME which is connected via ethernet. I will use this as my main production server and there is room for future upgrades but none planned.
+
+I use VS Code to SSH into my servers using the GitHub connection with the Remote Connection extension.
+
+I am using Proxmox as my OS and create VMs using Ubuntu Server to host my services. On the VMs I use Docker and Docker Compose to run some services. I will give the VMs between 1024 and 2048mb of RAM, 1 core, and about 50GB of storage. I intend to use LVM-thin to assist with varying storage needs and expansion.
+
+---
+Phase 2: Storage & Virtual Machine Management
+Configure LVM-Thin Storage
+Goal: Set up flexible storage for your VMs. Your 0.5TB NVME should have a pve volume group by default.
+Action: Access the Proxmox shell (via SSH or web console). Create a new LVM thin pool within your existing pve volume group. For example, if your VG is named pve, you might create a thin pool named data.
+Guide: Proxmox VE Storage: LVM Thin (See "Configuration" section and commands like lvcreate and lvconvert).
+Note: Proxmox often sets up local-lvm as a thin pool automatically on fresh installs. Verify its existence and capacity under Datacenter -> Storage.
+Upload Ubuntu Server ISO to Proxmox
+Goal: Make the Ubuntu installation image available for VMs.
+Action: In the Proxmox web GUI, navigate to your local storage, then to "ISO Images" and click "Upload" to transfer the Ubuntu Server ISO to your Proxmox server.
+Guide: Create a Ubuntu VM in Proxmox and setup networking (Step 2: Upload ISO)
+
+Create Ubuntu Server VMs (Testbench first, then Production)
+Goal: Create your virtual machines for each service.
+Action: For each VM (WireGuard, Caddy, Samba, Static Website):
+Click "Create VM" in the Proxmox GUI.
+Allocate 1-2 cores and 1024-2048MB RAM per VM.
+Select the Ubuntu Server ISO.
+Choose your LVM-thin storage for the virtual disk (e.g., 50GB).
+Configure network: Use a "Bridge" mode to connect the VM directly to your network. Assign static IP addresses for each VM within your local network.
+Guide: Create a Ubuntu VM in Proxmox and setup networking (Steps 3-5).
+Install Ubuntu Server on Each VM
+Goal: Get the guest operating system running.
+Action: Start each VM in Proxmox and open the console (noVNC). Follow the standard Ubuntu Server installation prompts. Configure basic network settings during the Ubuntu install (matching the static IPs assigned in Proxmox).
+Guide: Create a Ubuntu VM in Proxmox and setup networking (Step 4 & related networking sections).
+
+Phase 3: Core Services & Infrastructure
+Install Docker and Docker Compose on Ubuntu VMs
+Goal: Enable containerization for your services.
+Action: On each Ubuntu VM where you plan to run Docker services (Caddy, Samba, Static Website, potentially DDNS client if not a separate VM):
+Update package lists: sudo apt update && sudo apt upgrade -y
+Install necessary packages and add Docker's official GPG key and repository.
+Install docker-ce, docker-ce-cli, containerd.io, and docker-compose-plugin.
+Add your non-root user to the docker group (sudo usermod -aG docker <your_username>). Log out and back in for changes to take effect.
+Guide: How to Install Docker Engine on Ubuntu and How to Install Docker Compose on Ubuntu
+Configure NameCheap DDNS Update Client (on Caddy VM)
+Goal: Keep your domain pointing to your dynamic public IP.
+Action: Install a DDNS client like ddclient or use a NameCheap-specific script/snap. Configure it with your domain, hostname(s) (e.g., @ for root, www), and the Dynamic DNS password from your NameCheap Advanced DNS settings.
+Guide: How do I configure DDClient for Namecheap? (Pay close attention to the protocol=namecheap and server=dynamicdns.park-your-domain.com settings).
+Alternative: You mentioned a snap for NameCheap DDNS which might be simpler: snap install namecheap-ddns-client then snap set namecheap-ddns-client domain=yourdomain.com host=@ password=yourpassword.
+
+Set Up WireGuard VPN (on its dedicated VM)
+Goal: Secure remote access to your network.
+Action:
+Install WireGuard on the VM.
+Generate server and client key pairs.
+Create the WireGuard server configuration file (/etc/wireguard/wg0.conf), defining the server's private IP, listening port (e.g., UDP 51820), and public keys of expected clients.
+Enable IP forwarding on the VM.
+Start and enable the WireGuard service.
+On your router, port forward the WireGuard UDP port (e.g., 51820) from your public IP to your WireGuard VM's local IP.
+Create client configuration files for your devices that can install WireGuard.
+Guide: Set Up Your Own WireGuard VPN Server on Ubuntu or Introduction to WireGuard VPN - Ubuntu Server documentation
+
+Phase 4: Service Deployment
+Configure Caddy as Reverse Proxy (on Caddy VM)
+Goal: Serve your website and handle HTTPS.
+Action:
+Install Caddy on the VM.
+Create a Caddyfile that defines your domain(s) and proxies traffic to your Static Website VM. Caddy will automatically handle Let's Encrypt certificates.
+On your router, port forward ports 80 (HTTP) and 443 (HTTPS) to your Caddy VM's local IP address.
+Guide: Setting up the Caddy Web Server on Ubuntu (This covers static file serving directly, but you'll adapt the reverse_proxy directive for a separate static website VM).
+
+For reverse proxying a separate VM:
+Code snippet
+yourdomain.com {
+    reverse_proxy http://<static_website_vm_ip_address>:80
+}
+Ensure your domain's A/AAAA records point to your public IP (handled by DDNS).
+Set Up Static Website (on Static Website VM)
+Goal: Host your website content.
+Action: Install a lightweight web server like Nginx on this VM. Place your static website files in the webroot directory (e.g., /var/www/html). This VM does not need port forwarding on the router, as Caddy will proxy to it.
+Guide (Nginx): How To Install Nginx on Ubuntu 22.04 (Focus on installation and serving static files).
+
+Configure Samba File Share (on Samba VM)
+Goal: Local and remote file sharing.
+Action:
+Install Samba on the VM.
+Create shared directories.
+Edit the smb.conf file to define your shares and set appropriate permissions.
+Create Samba users and set their passwords (sudo smbpasswd -a <username>).
+Crucially: Do NOT port forward Samba's ports (139, 445) from your router to the internet. Access Samba only through your WireGuard VPN for remote connections.
+Guide: How to Install Samba on Ubuntu {+Configuring and Connecting} or Set up Samba as a file server - Ubuntu documentation
+
+Phase 5: Security & Maintenance
+Harden Public SSH Access (on Proxmox Host & relevant VMs)
+Goal: Secure SSH for clients that cannot use WireGuard.
+Action: For the Proxmox host and any VMs you need to SSH into directly from outside WireGuard:
+Disable Password Authentication: Edit /etc/ssh/sshd_config set PasswordAuthentication no.
+Disable Root Login: In /etc/ssh/sshd_config set PermitRootLogin no.
+Change SSH Port: In /etc/ssh/sshd_config change Port 22 to a non-standard high-numbered port (e.g., Port 2222). Remember to forward this new port on your router.
+Install & Configure Fail2Ban: This will automatically ban IPs that attempt too many failed login attempts.
+Ensure SSH Keys are Set Up: Before disabling password login, ensure your SSH public key is in ~/.ssh/authorized_keys for all users you wish to access.
+Guide: SSH Security Best Practices: Protect Your Remote Access Infrastructure (Focus on "Disable password authentication", "Disable root login", "Change the default SSH port", and "Use SSH keys"). Many fail2ban specific guides are available with a quick search.
+
+Configure Firewall Rules
+Goal: Restrict network access to only necessary ports/services.
+Action:
+Router: Only forward ports for WireGuard (UDP, custom port), Caddy (TCP 80, 443), and your chosen public SSH port (TCP, custom port). Block all other incoming traffic.
+Proxmox Host Firewall: Proxmox has a built-in firewall. Configure rules to allow only necessary traffic to the host itself (e.g., port 8006 for GUI, your SSH port).
+VM Firewalls (UFW): On each Ubuntu VM, use ufw (Uncomplicated Firewall) to allow only necessary inbound traffic to that VM (e.g., WireGuard VM: allow its UDP port; Caddy VM: allow 80/443 from Proxmox bridge; Samba VM: allow Samba ports only from WireGuard VPN IPs or local network).
+Guide (UFW): How To Set Up a Firewall with UFW on Ubuntu
+
+Implement Proxmox Backup Strategy
+Goal: Ensure your VMs and data are recoverable.
+Action: In the Proxmox GUI, set up backup jobs for your VMs.
+Frequency: Daily for critical VMs, less frequent for others.
+Storage: Plan to back up to a separate physical disk (e.g., an external USB drive connected to the Vostro), or a network share (e.g., a simple NAS if you expand), or even cloud storage (though more complex).
+Type: Consider snapshot mode for running VMs.
+Retention: Set a retention policy to manage storage space.
+Testing: Periodically test restoring a VM from backup to ensure the process works.
+Guide: Proxmox Backup and Restore: Comprehensive Guide for Efficient Data Management and Effortless Proxmox Backup: Your Ultimate Guide to Securing VMs
+
+Regular Updates:
+Goal: Keep all software patched for security and performance.
+Action: Regularly run apt update && apt upgrade -y on all your Ubuntu VMs and apt update && apt dist-upgrade -y on your Proxmox host.
+Consider setting up automated updates for less critical components, but always be mindful of potential breakages.
