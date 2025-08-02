@@ -2,12 +2,27 @@
     <picture>
         <img width="700" height="200" alt="Another_Juvenile_Home_Server" src="https://github.com/user-attachments/assets/9dacd65e-2d37-4f58-95a1-5ea009c7ce2b" />
         <img src="docs/assets/HomeLab.png" />
-[Documentation]
 </div>
         
 [Documentation]: https://homelab.nolandonahue.org
 
 ---
+
+- [Hardware](#hardware)
+  - [Testbench](#testbench)
+  - [Production](#production)
+  - [Router and Network](#router-and-network)
+- [Network and Environment](#network-and-environment)
+  - [Structure](#structure)
+- [Program List](#program-list)
+  - [Host](#host)
+  - [VPN](#vpn)
+  - [FileShare](#fileshare)
+  - [ReverseProxy/Hosting](#reverseproxyhosting)
+  - [CatCamera](#catcamera)
+- [Related Projects](#related-projects)
+- [License](#license)
+
 
 ## Hardware
 
