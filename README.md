@@ -8,7 +8,7 @@
 
 [Documentation]: https://homelab.nolandonahue.org
 
-![Network](docs/assets/network.drawio.svg)
+![Network](docs/assets/HomeLab.drawio.svg)
 
 ## Hardware
 
