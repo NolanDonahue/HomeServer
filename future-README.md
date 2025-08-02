@@ -1,3 +1,21 @@
+- [Pihole](#pihole)
+- [Portainer](#portainer)
+- [Uptime Kuma?](#uptime-kuma)
+- [Nextcloud](#nextcloud)
+- [Vaultwarden or Authentic](#vaultwarden-or-authentic)
+- [Home Assistant](#home-assistant)
+- [Netdata](#netdata)
+  - [Media](#media)
+- [Plex or Jellyfin](#plex-or-jellyfin)
+- [Sonarr or Radarr](#sonarr-or-radarr)
+- [Audiobookshelf](#audiobookshelf)
+  - [Network](#network)
+- [Access Point](#access-point)
+  - [CCTV](#cctv)
+  - [NAS](#nas)
+  - [Remote NAS](#remote-nas)
+
+
 ### Future Plans
 
 ## Software
