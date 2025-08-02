@@ -23,7 +23,7 @@
 
 ## Hardware
 
-![Network](docs/assets/HomeLab.drawio.svg)
+![Network](docs/assets/HomeLab.png)
 
 ### Testbench
 
