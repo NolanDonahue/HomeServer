@@ -21,33 +21,33 @@
 - [License](#license)
 
 
-## Hardware
+# Hardware
 
 ![Network](docs/assets/HomeLab.drawio.svg)
 
-### Testbench
+## Testbench
 
 Acer Swift 5
 8gb Ram
 256gb SSD
 
-### Production
+## Production
 
 Dell Vostro 3670
 16gb Ram
 500gb NVME
 1tb HDD
 
-### Router and Network
+## Router and Network
 
 TP-Link AX55 AC3000
 TP-Link 5port 1gb switch
 
-## Network and Environment
+# Network and Environment
 
 Currently using a TP-Link AX55 AC3000 with the goal of switching to OpnSense in the future to create VLANs
 
-### Structure
+## Structure
 ```
 SWIFT Development Environment                         MAIN Production Environment
 192.168.0.15x/24 Network                              192.168.9.10x/24 Network
@@ -59,28 +59,28 @@ SWIFT Development Environment                         MAIN Production Environmen
     
 ```
 
-## Program List
+# Program List
 
-### Host
+## Host
 Proxmox hosting Ubuntu Server VMs with LVM-Thin storage
 
-### VPN
+## VPN
 WireGuard from CLI
 
-### FileShare
+## FileShare
 Samba from Docker Compose
 
-### ReverseProxy/Hosting
+## ReverseProxy/Hosting
 Caddy from CLI
 Website files for self hosting
 HomePage from Docker Compose
 
-### CatCamera
+## CatCamera
 None / Will be used for a local USB camera to record the cat for when the wife is away
 
-## Related Projects
+# Related Projects
 - [sfcal/homelab](https://github.comsfcal/homelab) - The best homelab tech support on the WWW
 
-## License
+# License
 
 This project is licensed under the GPLv3 License - see the LICENSE file for details.
