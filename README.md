@@ -9,8 +9,28 @@
 
 [Documentation]: https://homelab.nolandonahue.org
 
-#Homelab
+# Homelab
 Another Juvenile Homelab
+
+## Hardware
+
+### Testbench
+
+Acer Swift 5
+8gb Ram
+256gb SSD
+
+### Production
+
+Dell Vostro 3670
+16gb Ram
+500gb NVME
+1tb HDD
+
+### Router and Network
+
+TP-Link AX55 AC3000
+TP-Link 5port 1gb switch
 
 ## Network and Environment
 
