@@ -16,44 +16,44 @@
   - [Remote NAS](#remote-nas)
 
 
-### Future Plans
+# Future Plans
 
 ## Software
-# Pihole
+### Pihole
 Add to its own VM or tag onto the Reverse Proxy VM using Docker Compose
 
-# Portainer
+### Portainer
 I don't know what it is but it comes up a lot
 
-# Uptime Kuma?
+### Uptime Kuma?
 Do I need this or does HomePage take care of this?
 
-# Nextcloud
+### Nextcloud
 Self hosted Cloud storage
 
-# Vaultwarden or Authentic
+### Vaultwarden or Authentic
 Password protection and security
 
-# Home Assistant
+### Home Assistant
 Home automation
 
-# Netdata
+### Netdata
 Performance tracker of the server
 
 ## Media
-# Plex or Jellyfin
+### Plex or Jellyfin
 Contingent on building a NAS
-# Sonarr or Radarr
+### Sonarr or Radarr
 Contingent on building a NAS with a robust VPN service
-# Audiobookshelf
+### Audiobookshelf
 Pair with Sonarr/Radarr to host audiobooks
-#Calibre-Web and Komga
+### Calibre-Web and Komga
 Pair with Sonarr/Radarr to host books
 ## Network
 #Router
 Second Hand T730 - $1-$200
 
-# Access Point 
+### Access Point 
 Ubiquiti UniFi 6 Lite - $90
 
 ## CCTV
@@ -64,4 +64,4 @@ Ethernet camera system
 Dunno
 
 ## Remote NAS
-Dunno
+Dnno
