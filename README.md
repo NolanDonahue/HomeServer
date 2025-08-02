@@ -58,7 +58,6 @@ SWIFT Development Environment                         MAIN Production Environmen
 └── 🟣 CatCamera - 192.168.0.154/24
     
 ```
-![Network] (docs/assets/network.drawio.svg)
 
 ## Program List
 
