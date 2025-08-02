@@ -20,6 +20,8 @@
 
 # Future Plans
 
+![Network](docs/assets/FUTUREHomeLab.drawio.svg)
+
 ## Software
 ### Pihole
 Add to its own VM or tag onto the Reverse Proxy VM using Docker Compose
