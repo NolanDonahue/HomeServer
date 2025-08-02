@@ -1,7 +1,7 @@
 <div align="center">
     <picture>
         <img width="700" height="200" alt="Another_Juvenile_Home_Server" src="https://github.com/user-attachments/assets/9dacd65e-2d37-4f58-95a1-5ea009c7ce2b" />
-        <img width="855" height="775" alt="image" src="https://github.com/user-attachments/assets/d4dfad6e-acb7-4a1a-98c3-edaef20c984d" />
+        <img width="855" height="775" alt="image" src="docs/assets/homelab.drawio" />
 
 [Documentation]
 </div>
