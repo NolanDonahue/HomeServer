@@ -80,7 +80,7 @@ HomePage from Docker Compose
 None / Will be used for a local USB camera to record the cat for when the wife is away
 
 # Related Projects
-- [sfcal/homelab](https://github.comsfcal/homelab) - The best homelab tech support on the WWW
+- [sfcal/homelab](https://github.com/sfcal/homelab) - The best homelab tech support on the WWW
 
 # License
 
