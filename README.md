@@ -34,7 +34,8 @@ Acer Swift 5
 ## Production
 
 Dell Vostro 3670
-16gb Ram
+i3-8100 @3.6ghz (1 core, 4 socket)
+16gb Ram (DDR4, 2666)
 500gb NVME
 1tb HDD
 
