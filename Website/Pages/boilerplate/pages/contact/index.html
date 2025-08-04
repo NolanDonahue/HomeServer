@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../css/style.css">
+    <title>Contact</title>
+</head>
+<body>
+    <nav>
+    <div class="nav-content">
+        <div class="logo">
+        <a href="#">Nolan Donahue</a>
+        </div>
+        <ul class="nav-links">
+        <li><a href="../../">Home</a></li>
+        <li><a href="../about/">About</a></li>
+        <li><a href="#">Contact</a></li>
+        </ul>
+    </div>
+    </nav>
+    <br>
+    <br>
+    <br>
+
+    <div class="container">
+        <h1>Contact</h1>
+        <p>LinkdIn</p>
+        <p>GitHub</p>
+    </div>
+
+</body>
+<script>
+  let nav = document.querySelector("nav");
+    window.onscroll = function() {
+      if(document.documentElement.scrollTop > 20){
+        nav.classList.add("sticky");
+      }else {
+        nav.classList.remove("sticky");
+      }
+    }
+</script>
+</html>
