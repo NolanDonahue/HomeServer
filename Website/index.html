@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/style.css">
+    <title>Document</title>
+</head>
+<body>
+    <nav>
+    <div class="nav-content">
+        <div class="logo">
+        <a href="#">Nolan Donahue</a>
+        </div>
+        <ul class="nav-links">
+        <li><a href="#">Home</a></li>
+        <li><a href="./pages/about/">About</a></li>
+        <li><a href="./pages/contact/">Contact</a></li>
+        </ul>
+    </div>
+    </nav>
+    <br>
+    <br>
+    <br>
+
+    <div class="container">
+        <h1>HomeServer</h1>
+        <br>
+        <div class="center--level">
+            <img src="./images/server_diagram.png" alt="Home Server Diagram">
+        </div>
+        <br>
+        <h3>Hardware</h3>
+        <h4 style="color:purple">Main</h4>
+        <p>Dell Vostro 3670</p>
+        <p>16gb ram, 500gb NVME, 1tb HDD</p>
+        <br>
+        <h4 style="color:purple">Test Bench</h4>
+        <p>Acer Swift 5 Laptop</p>
+        <p>8gb Ram, 258gb SSD</p>
+        <br>
+        <h4 style="color:purple">Network</h4>
+        <p>TP-Link AX55 AC3000</p>
+    </div>
+
+</body>
+<script>
+  let nav = document.querySelector("nav");
+    window.onscroll = function() {
+      if(document.documentElement.scrollTop > 20){
+        nav.classList.add("sticky");
+      }else {
+        nav.classList.remove("sticky");
+      }
+    }
+</script>
+</html>
