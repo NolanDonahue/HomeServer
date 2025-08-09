@@ -94,7 +94,7 @@ sudo docker compose pull
 sudo docker compose up caddy -d
 sudo docker compose up pihole -d
 ```
-Log into the pihole admin panel (https://your.vm.ip.xxx:8081/admin)
+Log into the pihole admin panel (http://your.vm.ip.xxx:8081/admin)
   Use the password you set in your .env secrets
   Browse to System > Settings > Local DNS
     Add a local DNS
