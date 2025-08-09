@@ -1,0 +1,149 @@
+services:
+  ## Caddy ##
+  caddy:
+    image: caddy:alpine
+    restart: unless-stopped
+    container_name: caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - /var/www/website:/var/www/website
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - my-network
+    dns: #Need DNS to use Caddy and PiHole
+      - 8.8.8.8
+      - 8.8.4.4
+  ## Pihole ##
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "8081:80/tcp"
+    environment:
+      TZ: "America/Detroit"
+      # Set a password to access the web interface. Not setting one will result in a random password being assigned
+      FTLCONF_webserver_api_password: ${pihole_api_pass}
+      FTLCONF_dns_listeningMode: "all"
+      FTLCONF_DNSMASQ_LISTENING: "all"
+      WEBPASSWORD: ${pihole_web_pass}
+        
+    volumes:
+      - "./etc-pihole:/etc/pihole"
+    cap_add:
+      - NET_ADMIN
+      - SYS_TIME
+      - SYS_NICE
+    restart: unless-stopped
+    networks:
+      my-network:
+        ipv4_address: 172.18.0.66
+  ## Actual Budget ##
+  actual-server:
+    image: jlongster/actual-server:latest-alpine
+    environment:
+      - HTTPS
+    volumes:
+      - "actual-data:/app/data"
+    restart: "unless-stopped"
+    networks:
+      - my-network
+  ## Vaultwarden ##
+  vaultwarden:
+    image: vaultwarden/server:latest
+    container_name: vaultwarden
+    restart: unless-stopped
+    environment:
+      DOMAIN: ${vault_domain}
+    ports:
+      - "8000:80"
+    volumes:
+      - ./vw-data/:/data/
+    networks:
+      - my-network
+  ## HomePage ##
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: ${homepage_domain}
+      PUID: 1000 # optional, your user id
+      PGID: 1000 # optional, your group id
+    volumes:
+      - ${homepage_volume_directory}:/app/config # Make sure your local config directory exists
+      - /var/run/docker.sock:/var/run/docker.sock:ro # optional, for docker integrations
+    restart: unless-stopped
+    networks:
+      - my-network
+
+  ## Samba ##
+  samba:
+    image: dockurr/samba
+    container_name: samba
+    environment:
+      NAME: ${samba_name}
+      USER: ${samba_user}
+      PASS: ${samba_pass}
+      RW: true
+      UID: 1000
+      GID: 1000
+    ports:
+      - 445:445
+    volumes:
+      - ./samba:/storage
+      - ./users.conf:/etc/samba/users.conf
+    restart: always
+    networks:
+      - my-network
+
+    ## Frigate ##
+  frigate:
+    container_name: frigate
+    privileged: true
+    restart: unless-stopped
+    stop_grace_period: 30s
+    image: ghcr.io/blakeblackshear/frigate:stable
+    shm_size: "512mb"
+    devices:
+      - /dev/bus/usb:/dev/bus/usb
+      - /dev/apex_0:/dev/apex_0
+      - /dev/video11:/dev/video11
+      - /dev/dri/renderD128:/dev/dri/renderD128
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /frigate-config:/config
+      - /frigate-media:/media/frigate
+      - type: tmpfs
+        target: /tmp/cache
+        tmpfs:
+          size: 1000000000
+    ports:
+      - "8971:8971"
+      - "8554:8554"
+      - "8555:8555/tcp"
+      - "8555:8555/udp"
+    environment:
+      FRIGATE_RTSP_PASSWORD: ${frigate_pass}
+    networks:
+      - my-network
+volumes:
+  # caddy_certs:
+  caddy_config:
+  caddy_data:
+  # caddy_sites:
+  ##Actual
+  actual-data:
+
+networks:
+  my-network:
+    name: my-network
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/24
+          gateway: 172.18.0.1
