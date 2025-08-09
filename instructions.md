@@ -108,7 +108,7 @@ Paste in
 ```
 save and exit
 ```
-docker pull ghcr.io/actualbudget/actual:sha-2abc144
+docker pull ghcr.io/actualbudget/actual:sha-2abc144-alpine
 sudo docker compose up caddy -d
 sudo docker compose up pihole -d
 ```
