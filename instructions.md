@@ -32,33 +32,15 @@ echo \
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 ```
-Create docker-compose.yaml at your chosen directory (I use /home/user/)
+Create docker-compose.yaml at your chosen directory (I use /home/user/) add the code from the serve/vm2-docker/
 ```
 sudo nano docker-compose.yaml
 ```
-Create a temporary Caddyfile at your chosen directory so we can configure pihole
+Create a Caddyfile in the same chosen directory add the code from the serve/vm2-docker/
 ```
 sudo nano Caddyfile
 ```
-```
-pve.${domain} {
-	reverse_proxy 192.168.0.100:8006 {
-		transport http {
-			tls
-			tls_insecure_skip_verify
-		}
-	}
-}
-${domain}, www.${domain} {
-	root * /var/www/website
-	file_server
-}
-pihole.${domain} {
-	redir / /admin/
-	reverse_proxy pihole:80
-}
-```
-Add .env variables to the same directory as docker-compose.yaml and Caddyfile
+Add .env variables to the same directory as docker-compose.yaml and Caddyfile. add the code from the serve/vm2-docker/
 ```
 sudo nano .env
 ```
@@ -72,6 +54,7 @@ Stop systemd-resolved (this conflict with pihole)
 ```
 sudo systemctl disable systemd-resolved
 sudo systemctl stop systemd-resolved
+echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
 ```
 
 Network Configuration
@@ -96,7 +79,6 @@ Log into the dashboard of your domain hosting platform (ex. NameCheap)
 
 Start Docker and Pull Images
 ```
-sudo docker compose pull
 ##Give your docker access to pihole for DNS
 ##########################!DO YOU NEEDD THE DNS CHANGE???
 sudo nano /etc/docker/daemon.json
@@ -104,11 +86,12 @@ sudo nano /etc/docker/daemon.json
 Paste in
 ```
 {
-  "dns": ["172.18.0.66", "8.8.8.8", "8.8.4.4"]
+  "dns": ["8.8.8.8", "172.18.0.66", "8.8.4.4"]
 }
 ```
 save and exit
 ```
+sudo docker compose pull
 sudo docker compose up caddy -d
 sudo docker compose up pihole -d
 ```
