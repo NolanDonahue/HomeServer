@@ -17,6 +17,9 @@ services:
     dns: #Need DNS to use Caddy and PiHole
       - 8.8.8.8
       - 8.8.4.4
+    environment:
+      - DOMAIN=${my_domain}
+    command: ["/bin/sh", "-c", "caddy fmt --overwrite /etc/caddy/Caddyfile && caddy run --config /etc/caddy/Caddyfile --adapter caddyfile"]
   ## Pihole ##
   pihole:
     container_name: pihole
