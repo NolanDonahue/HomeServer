@@ -98,6 +98,7 @@ Start Docker and Pull Images
 ```
 sudo docker compose pull
 ##Give your docker access to pihole for DNS
+##########################!DO YOU NEEDD THE DNS CHANGE???
 sudo nano /etc/docker/daemon.json
 ```
 Paste in
@@ -108,7 +109,6 @@ Paste in
 ```
 save and exit
 ```
-docker pull ghcr.io/actualbudget/actual:sha-2abc144-alpine
 sudo docker compose up caddy -d
 sudo docker compose up pihole -d
 ```
