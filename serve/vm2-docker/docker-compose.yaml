@@ -35,7 +35,7 @@ services:
       FTLCONF_dns_listeningMode: "all"
       FTLCONF_DNSMASQ_LISTENING: "all"
       WEBPASSWORD: ${pihole_web_pass}
-        
+
     volumes:
       - "./etc-pihole:/etc/pihole"
     cap_add:
@@ -48,7 +48,7 @@ services:
         ipv4_address: 172.18.0.66
   ## Actual Budget ##
   actual-server:
-    image: jlongster/actual-server:latest-alpine
+    image: actualbudget/actual-server:latest
     environment:
       - HTTPS
     volumes:
@@ -56,6 +56,9 @@ services:
     restart: "unless-stopped"
     networks:
       - my-network
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
   ## Vaultwarden ##
   vaultwarden:
     image: vaultwarden/server:latest
