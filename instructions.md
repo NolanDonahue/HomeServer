@@ -80,7 +80,6 @@ Log into the dashboard of your domain hosting platform (ex. NameCheap)
 Start Docker and Pull Images
 ```
 ##Give your docker access to pihole for DNS
-##########################!DO YOU NEEDD THE DNS CHANGE???
 sudo nano /etc/docker/daemon.json
 ```
 Paste in
