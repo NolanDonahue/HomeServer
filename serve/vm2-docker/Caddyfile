@@ -1,32 +1,32 @@
-# The DNS record for pve.${domain} must point to your home's public IP address.
-pve.${domain} {
-    reverse_proxy 192.168.0.100:8006 {
-        transport http {
-            tls
-            tls_insecure_skip_verify
-        }
-    }
+# The DNS record for pve.{$DOMAIN} must point to your home's public IP address.
+pve.{$DOMAIN} {
+	reverse_proxy 192.168.0.100:8006 {
+		transport http {
+			tls
+			tls_insecure_skip_verify
+		}
+	}
 }
-${domain}, www.${domain} {
-    root * /var/www/website
-    file_server
+{$DOMAIN}, www.{$DOMAIN} {
+	root * /var/www/website
+	file_server
 }
-pihole.${domain} {
-        redir / /admin/
-        reverse_proxy pihole:80
+pihole.{$DOMAIN} {
+	redir / /admin/
+	reverse_proxy pihole:80
 }
-budget.${domain} {
-        reverse_proxy actual-server:5006
+budget.{$DOMAIN} {
+	reverse_proxy actual-server:5006
 }
-vault.${domain} {
-        reverse_proxy vaultwarden:80
+vault.{$DOMAIN} {
+	reverse_proxy vaultwarden:80
 }
-dashboard.${domain} {
-        reverse_proxy homepage:3000
+dashboard.{$DOMAIN} {
+	reverse_proxy homepage:3000
 }
-office.${domain} {
-        reverse_proxy onlyoffice-documentserver:8080
+office.{$DOMAIN} {
+	reverse_proxy onlyoffice-documentserver:8080
 }
-home.${domain} {
-        reverse_proxy homeassistant.local:8123
+home.{$DOMAIN} {
+	reverse_proxy homeassistant.local:8123
 }
