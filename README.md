@@ -52,11 +52,10 @@ Currently using a TP-Link AX55 AC3000 with the goal of switching to OpnSense in 
 ```
 SWIFT Development Environment                         MAIN Production Environment
 192.168.0.15x/24 Network                              192.168.9.10x/24 Network
-├── 🔵 Proxmox - 192.168.0.150/24                    ├── 🔵 Proxmox - 192.168.0.150/24
-├── 🟢 VPN - 192.168.151/24                          ├── 🟢 VPN - 192.168.151/24  
-├── 🔴 FileShare - 192.168.0.152/24                  ├── 🔴 FileShare - 192.168.0.152/24 
-├── 🟠 ReverseProxy/Hosting - 192.168.0.153/24       └── 🟠 ReverseProxy/Hosting - 192.168.0.153/24 
-└── 🟣 CatCamera - 192.168.0.154/24
+├── 🔵 Proxmox - 192.168.0.150/24                    ├── 🔵 Proxmox - 192.168.0.100/24
+├── 🟢 VPN - 192.168.151/24                          ├── 🟢 VPN - 192.168.101/24  
+├── 🔴 FileShare - 192.168.0.152/24                  ├── 🔴 Docker - 192.168.0.102/24 
+└── 🟠 ReverseProxy/Hosting - 192.168.0.153/24       └── 🟠 HomeAssistant (OS) - 192.168.0.103/24 
     
 ```
 
