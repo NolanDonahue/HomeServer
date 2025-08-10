@@ -48,7 +48,6 @@ sudo nano .env
 Make directories for your images
 ```
 sudo mkdir homepage ##For HomePage configs
-sudo mkdir storage ##For Samba fileshare
 ```
 Stop systemd-resolved (this conflict with pihole)
 ```
@@ -89,6 +88,14 @@ Paste in
 }
 ```
 save and exit
+
+Create the directory for your website to be hosted from
+```
+touch /var/www/dist
+sudo chown -R 1000:1000 /var/www/dist
+sudo chmod -R 755 /var/www/dist
+```
+Move your site files to be hosted in there
 ```
 sudo docker compose pull
 sudo docker compose up caddy -d
