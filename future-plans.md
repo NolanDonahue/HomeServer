@@ -55,7 +55,9 @@ Pair with Sonarr/Radarr to host audiobooks
 Pair with Sonarr/Radarr to host books
 ## Network
 #Router
-Second Hand T730 - $1-$200
+GL Mt6000 - OpenWRT
+256gb external storage USB
+WireGuaud/Docker [Samba/PiHole]
 
 ### Access Point 
 Ubiquiti UniFi 6 Lite - $90
