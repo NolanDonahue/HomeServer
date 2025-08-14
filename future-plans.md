@@ -54,7 +54,7 @@ Pair with Sonarr/Radarr to host audiobooks
 ### Calibre-Web and Komga
 Pair with Sonarr/Radarr to host books
 ## Network
-#Router
+# Router
 GL Mt6000 - OpenWRT
 256gb external storage USB
 WireGuaud/Docker [Samba/PiHole]
