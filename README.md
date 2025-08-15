@@ -16,7 +16,7 @@
   - [VPN](#vpn)
   - [FileShare](#fileshare)
   - [ReverseProxy/Hosting](#reverseproxyhosting)
-  - [CatCamera](#catcamera)
+- [Future Plans](#future)
 - [Related Projects](#related-projects)
 - [License](#license)
 
@@ -75,8 +75,23 @@ Caddy from CLI
 Website files for self hosting
 HomePage from Docker Compose
 
-## CatCamera
-None / Will be used for a local USB camera to record the cat for when the wife is away
+# Future Plans
+## Cloud Services
+Create a free account on either AWS, Azure, or Google Cloud and host a light machine with the website host files
+- Learning cloud storage, CDN, cloud security
+- Create a cloud backup of the proxmox instance
+
+## Monitoring
+Employ Prometheus and Grafana via Docker to scrape metrics
+- Prometheus to watch server metrics
+- Grafana to watch hardware metrics
+
+## Security Scans
+Employ Nmap to scan my network
+Employ Lynis or OpenVAS for security auditing
+
+## Ansible
+Build Ansible for an Infrastructure as Code approach
 
 # Related Projects
 - [sfcal/homelab](https://github.com/sfcal/homelab) - The best homelab tech support on the WWW
