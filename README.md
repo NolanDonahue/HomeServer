@@ -16,7 +16,7 @@
   - [VPN](#vpn)
   - [FileShare](#fileshare)
   - [ReverseProxy/Hosting](#reverseproxyhosting)
-- [Future Plans](#future)
+- [Future Plans](#future-plans)
 - [Related Projects](#related-projects)
 - [License](#license)
 
