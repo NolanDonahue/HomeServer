@@ -59,15 +59,27 @@ GL Mt6000 - OpenWRT
 256gb external storage USB
 WireGuaud/Docker [Samba/PiHole]
 
+## Hardware
+
+### Server
+HP Engage Flex Mini - $150-$300
+  2.5gb Ethernet Flex Adapter - $30
+  E Key to M Key NVME Adapter - $12
+  NVME Storage (x2)
+  HP 800 G3 HDD/SSD SATA Connector Adapter - $9 (ALT HP G6 HDD Caddy w/ SATA Cable - $30)
+    2.5in SSD
+  BIOS Locked?
+  https://www.youtube.com/watch?v=CzCoOkFtHFw
+
 ### Access Point 
 Ubiquiti UniFi 6 Lite - $90
 
-## CCTV
+### CCTV
 Ubiquiti?
 Ethernet camera system
 
-## NAS
+### NAS
 Dunno
 
-## Remote NAS
-Dnno
+### Remote NAS
+Dunno
