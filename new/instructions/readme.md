@@ -1,3 +1,27 @@
+# How-To
+
+## Proxmox
+Install proxmox
+Download Ubuntu Server ISO
+Upload Ubuntu Server ISO
+
+## Create a VM
+Network Configuration
+-Subnet:  192.168.0.0/24
+-Address: 192.168.0.XXX
+-Gateway: 192.168.0.1
+-Name Server: 8.8.8.8, 8.8.4.4
+-Search Domains: 
+
+## VM1 - Main
+### WireGuard
+
+### Docker
+Caddy and PiHole
+```
+
+```
+
 # Checklist
 ## HomeServer
 
