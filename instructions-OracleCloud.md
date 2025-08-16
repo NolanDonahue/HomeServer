@@ -1,3 +1,5 @@
+https://last9.io/blog/prometheus-with-docker-compose/
+
 Use Oracle Cloud for an Always Free cloud based instance
 https://cloud.oracle.com/
 
