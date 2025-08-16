@@ -117,3 +117,28 @@ sudo docker compose up -d
 ```
 
 Now we configure
+
+UFW Rules
+```
+sudo ufw allow ssh
+sudo ufw allow 80
+sudo ufw allow 53
+sudo ufw allow 443
+sudo ufw allow from <Oracle Clouse IP> to any port 8080
+sudo ufw allow from <Oracle Clouse IP> to any port 9100
+
+sudo ufw enable
+```
+
+Port List:
+80 - Caddy
+53 - Pihole
+443 - Caddy
+445 - Samba
+8081 - Pihole
+8000 - Vaultwarden
+8080 - Cadvisor
+8554 - Frigate
+8555 - Frigate
+8971 - Frigate
+9100 - node-exporter
