@@ -150,4 +150,6 @@ Log into the admin panel of your local router and port forward the IP Address li
   Internal Port: 443
   Protocal: TCP
 
+Add the new caddy reverse-proxy into pihole local DNS for the new domain routing
+
 PROJECT: Move node-exporter to PVE for monitoring home server hardware, not VM hardware
