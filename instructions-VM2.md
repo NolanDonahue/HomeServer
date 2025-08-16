@@ -142,3 +142,10 @@ Port List:
 8555 - Frigate
 8971 - Frigate
 9100 - node-exporter
+
+Log into the admin panel of your local router and port forward the IP Address like you did for Caddy but now for 8080 (cadvisor) and 9100 (node-exporter)
+  Name: Caddy Reverse Proxy
+  Device IP Address: xxx.xxx.xxx.xxx (you just found this with ip a)
+  External Port: 443
+  Internal Port: 443
+  Protocal: TCP
