@@ -149,3 +149,5 @@ Log into the admin panel of your local router and port forward the IP Address li
   External Port: 443
   Internal Port: 443
   Protocal: TCP
+
+PROJECT: Move node-exporter to PVE for monitoring home server hardware, not VM hardware
