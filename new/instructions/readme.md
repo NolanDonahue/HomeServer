@@ -11,6 +11,14 @@ icacls id_rsa /inheritance:r
 icacls id_rsa /grant:r "<your user>":F
 REM icacls id_rsa.pub /remove "Everyone" < Use this if the others are causing problems with your public key connecting
 ```
+Connect to your PVE shell in Proxmox
+```
+nano /etc/sysctl.conf
+```
+set 'net.ipv4.ip_forward=1' and save
+```
+sysctl -p
+```
 
 ## Setup domain A Records
 Type: A Record
