@@ -414,7 +414,7 @@ Paste in and configure with your domain
 ```
 global:
   scrape_interval: 360s
-  evaluation_interval: 15s
+  evaluation_interval: 10s
 
 # Alertmanager configuration
 alerting:
@@ -429,22 +429,15 @@ rule_files:
 
 # Scrape configurations
 scrape_configs:
-  - job_name: 'prometheus'
-    scrape_interval: 360s
-    static_configs:
-      - targets: ['localhost:9090']
-
   - job_name: 'node-exporter'
-    scrape_interval: 300s
     static_configs:
       - targets: ['node-exporter.<yourdomain.com>']
     metric_relabel_configs:
       - source_labels: [__name__]
-        regex: '^node_cpu_seconds_total|node_memory_MemTotal_bytes|node_memory_MemFree_bytes|node_disk_read_bytes_total|node_disk_written_bytes_total'
+        regex: '^node_cpu_seconds_total|node_memory_MemAvailable_bytes|node_disk_io_time_seconds_total'
         action: keep
 
   - job_name: 'cadvisor'
-    scrape_interval: 300s
     static_configs:
       - targets: ['cadvisor.<yourdomain.com>']
     metric_relabel_configs:
@@ -458,7 +451,7 @@ scrape_configs:
 
 ### PVE - Proxmox
 Node-Exporter
-  [ ] accessible on the local connection
+  [x] accessible on the local connection
   [ ] configured
 
 ### VM 1 - Main
@@ -475,13 +468,13 @@ Frigate
   [ ] accessible on the local connection
   [ ] configured
 PiHole
-  [ ] accessible on the local connection
-  [ ] configured
+  [x] accessible on the local connection
+  [x] configured
 Caddy
-  [ ] accessible on the local connection
-  [ ] configured
+  [x] accessible on the local connection
+  [x] configured
 cAdvisor
-  [ ] accessible on the local connection
+  [x] accessible on the local connection
   [ ] configured
 Ansible
   [ ] accessible on the local connection
@@ -497,10 +490,10 @@ Samba
   [ ] configured
 
 ## Cloud Oracle
-  [ ] Instance created
-  [ ] Instance connects to the internet
-  [ ] Installed Prometheus
-  [ ] Installed Grafana
-  [ ] Prometheus pulls data from Home Server
+  [x] Instance created
+  [x] Instance connects to the internet
+  [x] Installed Prometheus
+  [x] Installed Grafana
+  [x] Prometheus pulls data from Home Server
   [ ] Grafana creates dashboard
   [ ] Website hosted
