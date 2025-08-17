@@ -27,7 +27,7 @@ IP Address: <Your Home IP>
 TTL: Automatic
 
 All Hosts to create records for:
-  @, budget, dashboard, home, monitor, pihole, prometheus, pve, vault, vpn, www
+  @, budget, cadvisor, dashboard, home, monitor, node-exporter, pihole, prometheus, pve, vault, vpn, www
 
 ## Setup router port forwarding
 Device IP Address: (VM1) 192.168.0.101
@@ -233,7 +233,7 @@ Go to pihole.your.domain and navigate to settings > Local DNS Records
 Domain: <Enter domains here>
 Associated IP: 192.168.0.101
 
-Domains: @, budget, dashboard, home, monitor, pihole, prometheus, pve, vault, vpn, www
+Domains: @, budget, cadvisor, dashboard, home, monitor, node-exporter, pihole, prometheus, pve, vault, vpn, www
 
 ### WireGuard
 Update Caddyfile by appending this to the bottom
