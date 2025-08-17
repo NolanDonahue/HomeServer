@@ -42,6 +42,8 @@ All ports to create rules for:
   9100 (Node-Exporter)
   51821 (WireGuard)
 
+## Make an Oracle Cloud instance to use and note its IPV4 address
+
 ## Proxmox
 Install proxmox
 Download Ubuntu Server ISO
@@ -60,7 +62,14 @@ Network Configuration
 ```
 sudo systemctl start ssh
 sudo systemctl enable ssh
+sudo nano /etc/netplan/50-cloud-init.yaml
 ```
+Add routing to the netplan yaml
+```
+      - to: "10.0.0.0/24"
+        via: "192.168.0.20"
+```
+
 Configure Firewall
 ```
 sudo ufw allow ssh
@@ -270,6 +279,179 @@ Update docker-compose.yml by appending this to the bottom
 sudo apt install wireguard -y
 ```
 
+WireGuard interface (vpn.domain.com) configuration in the Admin Panel
+Config
+	Host: <Your Router IP>
+ 	Port: 51820
+  	Allowed IPs: 10.8.0.0/24, 192.168.0.0/24, 172.18.0.66
+    DNS: 172.18.0.66
+Interface
+	Port: 51821
+ 	Device: eth0
+
+Setup cAdvisor and Node-Exporter to monitor the VM docker containers and hardware
+```
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($|/)'
+    ports:
+      - "9100:9100"
+    networks:
+      - caddy
+      - my-network
+    restart: unless-stopped
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    ports:
+      - "8080:8080"
+    networks:
+      - caddy
+      - my-network
+    restart: unless-stopped
+```
+Reverse-proxy the services to be read by the cloud monitoring, add this to the Caddyfile
+```
+monitor.{$DOMAIN} {
+    reverse_proxy {$CLOUD_IP}:3000
+}
+prometheus.{$DOMAIN} {
+    reverse_proxy /node-exporter* node-exporter:9100
+    reverse_proxy /cadvisor* cadvisor:8080
+}
+:80 {
+    redir https://{host}{uri}
+}
+```
+
+SSH into your oracle cloud instance, we're going to setup Prometheus to read data from our VM and Grafana to display it as a dashboard (https://last9.io/blog/prometheus-with-docker-compose/)
+```
+mkdir prometheus-monitoring
+cd prometheus-monitoring
+
+mkdir -p prometheus/rules alertmanager grafana/provisioning/{datasources,dashboards}
+```
+Create your docker-compose.yml file
+```
+volumes:
+  prometheus_data: {}
+  grafana_data: {}
+
+networks:
+  monitoring:
+    driver: bridge
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus-monitoring/prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=15d'
+      - '--storage.tsdb.wal-compression'
+      - '--web.enable-lifecycle'
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    ports:
+      - "3000:3000"
+    networks:
+      - monitoring
+    restart: unless-stopped
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    volumes:
+      - ./alertmanager:/etc/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+    ports:
+      - "9093:9093"
+    networks:
+      - monitoring
+    restart: unless-stopped
+```
+In your CLI
+```
+sudo nano prometheus-monitoring/prometheus/prometheus.yml
+```
+Paste in and configure with your domain
+```
+global:
+  scrape_interval: 360s
+  evaluation_interval: 15s
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - "rules/*.yml"
+
+# Scrape configurations
+scrape_configs:
+  - job_name: 'prometheus'
+    scrape_interval: 360s
+    static_configs:
+      - targets: ['localhost:9090']
+
+  - job_name: 'node-exporter'
+    scrape_interval: 300s
+    static_configs:
+      - targets: ['node-exporter.<yourdomain.com>']
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: '^node_cpu_seconds_total|node_memory_MemTotal_bytes|node_memory_MemFree_bytes|node_disk_read_bytes_total|node_disk_written_bytes_total'
+        action: keep
+
+  - job_name: 'cadvisor'
+    scrape_interval: 300s
+    static_configs:
+      - targets: ['cadvisor.<yourdomain.com>']
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: '^container_cpu_usage_seconds_total|container_memory_usage_bytes'
+        action: keep
+```
 
 # Checklist
 ## HomeServer
