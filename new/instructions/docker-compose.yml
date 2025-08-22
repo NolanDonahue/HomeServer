@@ -1,0 +1,148 @@
+volumes:
+  # caddy_certs:
+  caddy_config:
+  caddy_data:
+  # Actual
+  actual-data:
+  # Wg-easy
+  etc_wireguard:
+  # Pihole
+  etc_pihole:
+
+networks:
+  caddy:
+    name: caddy
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.8.1.0/24
+
+services:
+  caddy:
+    image: caddy:alpine
+    restart: unless-stopped
+    container_name: caddy
+    environment:
+      - DOMAIN=${my_domain}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+      - /var/www/website:/var/www/website
+    networks:
+      - caddy
+    depends_on:
+      - pihole
+    dns:
+      - 10.8.1.3
+
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    environment:
+      TZ: "America/Detroit"
+      FTLCONF_webserver_api_password: ${pihole_api_pass}
+      FTLCONF_dns_listeningMode: "all"
+      FTLCONF_DNSMASQ_LISTENING: "all"
+      WEBPASSWORD: ${pihole_web_pass}
+    volumes:
+      - ./pihole/etc-pihole:/etc/pihole
+      - ./pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+    cap_add:
+      - NET_ADMIN
+      - SYS_TIME
+      - SYS_NICE
+    restart: unless-stopped
+    networks:
+      caddy:
+        ipv4_address: 10.8.1.3
+
+  wg-easy:
+    image: ghcr.io/wg-easy/wg-easy:15
+    container_name: wg-easy
+    restart: unless-stopped
+    ports:
+      - "51820:51820/udp"
+      - "51821:51821/tcp"
+    volumes:
+      - ./wg-easy:/etc/wireguard
+    environment:
+      WG_HOST: ${home_ip}
+      WG_PORT: 51820
+      WG_DEFAULT_DNS: 10.8.1.3
+      WG_DEFAULT_ADDRESS: 10.8.0.1
+      WG_SUBNET: 10.8.0.0/24
+      LANG: en
+      WG_ALLOWED_IPS: 10.8.0.0/24
+      UI_TRAFFIC_STATS: "true"
+      UI_CHART_TYPE: 2
+    networks:
+      - caddy
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(sys|proc|dev|host|etc)($|/)'
+    ports:
+      - "9100:9100"
+    networks:
+      - caddy
+    restart: unless-stopped
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    ports:
+      - "8080:8080"
+    networks:
+      - caddy
+    restart: unless-stopped
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: ${homepage_domain}
+      PUID: 1000 # optional, your user id
+      PGID: 1000 # optional, your group id
+    volumes:
+      - ${homepage_volume_directory}:/app/config # Make sure your local config directory exists
+      - /var/run/docker.sock:/var/run/docker.sock:ro # optional, for docker integrations
+    restart: unless-stopped
+    networks:
+      - caddy
+  actual-server:
+    image: actualbudget/actual-server:latest
+    environment:
+      - HTTPS
+    volumes:
+      - "actual-data:/app/data"
+    restart: "unless-stopped"
+    networks:
+      - caddy
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
