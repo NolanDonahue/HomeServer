@@ -1,0 +1,39 @@
+# The DNS record for pve.{$DOMAIN} must point to your home's public IP address.
+pve.{$DOMAIN} {
+	reverse_proxy 192.168.0.100:8006 {
+		transport http {
+			tls
+			tls_insecure_skip_verify
+		}
+	}
+}
+{$DOMAIN}, www.{$DOMAIN} {
+	root * /var/www/website/
+	file_server
+}
+pihole.{$DOMAIN} {
+	redir / /admin/
+	reverse_proxy pihole:80
+}
+vpn.{$DOMAIN} {
+	reverse_proxy wg-easy:51821
+	tls internal
+}
+monitor.{$DOMAIN} {
+	reverse_proxy {$CLOUD_IP}:3000
+}
+prometheus.{$DOMAIN} {
+	reverse_proxy {$CLOUD_IP}:9090
+}
+node-exporter.{$DOMAIN} {
+	reverse_proxy node-exporter:9100
+}
+cadvisor.{$DOMAIN} {
+	reverse_proxy cadvisor:8080
+}
+budget.{$DOMAIN} {
+	reverse_proxy actual-server:5006
+}
+dashboard.{$DOMAIN} {
+	reverse_proxy homepage:3000
+}
