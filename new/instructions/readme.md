@@ -1,5 +1,55 @@
 # How-To
 
+## Install Proxmox
+Use Rufus to create a boot drive
+Ensure that you are using ethernet
+Install from the boot menu
+Use the graphical interface
+Select your drive configuration
+Set your country and timezone
+Enter a strong password and email address
+Network Configuration:
+	Ensure the ethernet port is selected, proxmox does not work well with wifi
+ 	Set a name for your machine such as pve.server.local
+  	Set an unused local IP Address such as 192.168.0.100/24
+    Set your routers actual gateway such as 192.168.0.1
+	Set your DNS, likely the same as the router above
+ Reboot and install
+
+ Navigate to http://192.168.0.100:8006 on your computer to access the proxmox interface
+	username: root
+ 	password: the one you set on install
+
+If you are running proxmox on a laptop you can run the commands in laptop_config to be able to use 'bat' to check the battery of the system and it will disable sleep when closing the laptop lid so you can store it away
+
+Create VM (top right corner)
+	General
+ 		VM ID: 101
+ 		Name: Docker
+	OS
+ 		ISO Image: Ubuntu Server
+	Disks
+ 		Disk Size: Set to your preference
+	CPU
+ 		Sockets: 1
+   		Cores: 2
+ 	Memory
+  		Memory: Set based on your systems availability (recommend at least 6GB)
+	Confirm and Create
+ 
+Open the shell of your new VM and install Ubuntu Server
+	Under Network Configuration
+ 		Manually configure your connection
+   			IPv4 Method: Manual
+			Subnet: 192.168.0.0/24
+   			Address: 192.168.0.101
+			Gateway: 192.168.0.1
+   			Name Servers: 8.8.8.8, 8.8.4.4
+	  		Search Domains:
+ 	Set your login details
+  	Highly recommend using GitHub to install and import OpenSSH Server and your SSH Keys
+	Wait for install to complete and reboot	
+ 
 ## Establish SSH environment on your home computer
 Open Command Prompt
 Generate a key pair
