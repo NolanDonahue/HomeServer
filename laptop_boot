@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# This script performs basic system updates, installs Docker,
+# sets a 'bat' alias for battery status, and configures lid switch behavior.
+# It is designed to be run on an Ubuntu server.
+
+sudo apt-get update -y
+sudo apt-get upgrade -y
+
+# --- Install 'bat' alias in .bashrc ---
+# This alias uses 'upower' to display battery information.
+# Ensure 'upower' is installed if you intend to use this alias.
+# For the alias to take effect, the user must log out and log back in,
+# or run 'source ~/.bashrc' after the script completes.
+# Assuming the target user is 'test'. Adjust '/home/test/.bashrc' if needed.
+apt-get install upower -y
+ALIAS_LINE="alias bat='upower -i /org/freedesktop/UPower/devices/battery_BAT0 | grep -E \"time full|percentage\"'"
+# Check if the alias already exists to prevent duplicates
+if ! grep -qF "$ALIAS_LINE" ~/.bashrc; then
+    echo "$ALIAS_LINE" | tee -a ~/.bashrc > /dev/null
+    echo "Alias 'bat' added to .bashrc."
+else
+    echo "Alias 'bat' already exists in .bashrc. Skipping."
+fi
+source ~/.bashrc
+
+# --- Set HandleLidSwitch to ignore in logind.conf ---
+# This prevents the server from suspending or shutting down when the lid is closed.
+echo "--- Configuring HandleLidSwitch to ignore in logind.conf ---"
+# Make a backup of the original file first
+cp /etc/systemd/logind.conf /etc/systemd/logind.conf.bak
+# Use sed to uncomment and set HandleLidSwitch to ignore
+sed -i 's/^#\(HandleLidSwitch=\).*/\1ignore/' /etc/systemd/logind.conf
+echo "Restarting systemd-logind service for changes to take effect..."
+systemctl restart systemd-logind
