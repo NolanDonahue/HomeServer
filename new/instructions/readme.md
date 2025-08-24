@@ -22,6 +22,11 @@ Network Configuration:
 
 If you are running proxmox on a laptop you can run the commands in laptop_config to be able to use 'bat' to check the battery of the system and it will disable sleep when closing the laptop lid so you can store it away
 
+If you want to run the Proxmox VE Helper-Scripts for post install
+```
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/tools/pve/post-pve-install.sh)"
+```
+
 Create VM (top right corner)
 	General
  		VM ID: 101
@@ -153,8 +158,6 @@ echo \
   sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt-get update
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
-
-sudo docker network create caddy
 ```
 Create your .env in the same directory as you will have your docker-compose and Caddyfile, this will house your secret variables
 ```
@@ -277,21 +280,40 @@ echo "nameserver 8.8.8.8" | sudo tee /etc/resolv.conf
 
 sudo docker compose pull
 sudo docker compose up -d
+sudo docker network create caddy
+sudo docker compose down --remove-orphans
+sudo docker compose up -d
 ```
 
 Go to pihole.your.domain and navigate to settings > Local DNS Records
 Domain: <Enter domains here>
 Associated IP: 192.168.0.101
 
-Domains: @, budget, cadvisor, dashboard, home, monitor, node-exporter, pihole, prometheus, pve, vault, vpn, www
+Domains: budget, cadvisor, dashboard, home, monitor, node-exporter, pihole, prometheus, pve, vault, vpn
+
+If you want add Hagezi blocklists to pihole (https://github.com/hagezi/dns-blocklists)
+	I like 
+ 	Pro + - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/pro.txt
+    Threat Intelligence Feed - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/tif.txt
+	Dynamic DNS - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/dyndns.txt
+ 	Badware Hoster - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/hoster.txt
+  	Most Abused TLDs - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/spam-tlds-adblock.txt
+    Amazon Native Tracker - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/native.amazon.txt
+	Microsoft Native Tracker - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/native.winoffice.txt
+ 	Samsung Native Tracker - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/native.samsung.txt
+  	LG webOS Native Tracker - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/native.lgwebos.txt
+   Roku Native Tracker - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/native.roku.txt
+BULK: 
+https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/pro.txt, https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/tif.txt, https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/dyndns.txt, https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/hoster.txt, https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/spam-tlds-adblock.txt,
+https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/native.amazon.txt,
+https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/native.winoffice.txt,
+https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/native.samsung.txt,
+https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/native.lgwebos.txt,
+https://raw.githubusercontent.com/hagezi/dns-blocklists/main/adblock/native.roku.txt
 
 ### WireGuard
 Update Caddyfile by appending this to the bottom
 ```
-{
-    email {$email_addr}
-}
-
 vpn.{$DOMAIN} {
     reverse_proxy wg_easy:80
     tls internal
@@ -327,6 +349,9 @@ Update docker-compose.yml by appending this to the bottom
 
 ```
 sudo apt install wireguard -y
+sudo docker compose pull
+sudo docker compose down caddy
+sudo docker compose up -d
 ```
 
 WireGuard interface (vpn.domain.com) configuration in the Admin Panel
