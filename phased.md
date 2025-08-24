@@ -55,7 +55,7 @@ icacls id_rsa /grant:r "<your user>":F
 ```
 
 -Setup Docker/PiHole
-Install Docker
+Install Docker, Wireguard, and Caddy
 ```
 sudo apt-get update && sudo apt-get upgrade -y
 
@@ -80,13 +80,112 @@ DOMAIN="domain.org"
 PIHOLE_WEB_PASS="password"
 WG_PASS="password"
 ```
+Create a docker-compose.yml file
+```
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+    environment:
+      TZ: 'America/New_York'
+      WEBPASSWORD: ${PIHOLE_WEB_PASS}
+    volumes:
+      - './etc-pihole/:/etc/pihole/'
+      - './etc-dnsmasq.d/:/etc/dnsmasq.d/'
+    restart: unless-stopped
+    networks:
+      - backend_network # Connects to the internal network
+
+  wg-easy:
+    environment:
+      - WG_HOST=vpn.${DOMAIN}
+      - PASSWORD=${WG_PASS}
+    image: ghcr.io/wg-easy/wg-easy
+    container_name: wg-easy
+    hostname: wg-easy
+    volumes:
+      - ~/.wg-easy:/etc/wireguard
+    ports:
+      - "51820:51820/udp"
+      # REMOVED the port mapping for 51821 (the web UI).
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+    networks:
+      - vpn_network # A dedicated network for the VPN
+
+  caddy:
+    container_name: caddy
+    image: caddy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      - DOMAIN=${DOMAIN}
+    networks:
+      - backend_network # Can communicate with pihole and other back-end services
+      - caddy_external # Can reach the host's network
+    
+volumes:
+  caddy_data:
+  caddy_config:
+
+networks:
+  backend_network: # For internal container communication
+    driver: bridge
+  caddy_external: # To connect Caddy to the host network
+    driver: bridge
+  vpn_network: # Dedicated to the VPN, for better isolation
+    driver: bridge
+```
+Create a Caddyfile
+```
+{$DOMAIN}, www.{$DOMAIN} {
+	root * /var/www/website/
+	file_server
+}
+pihole.{$DOMAIN} {
+  reverse_proxy pihole:80
+}
+pve.{$DOMAIN} {
+	reverse_proxy 192.168.0.100:8006 {
+		transport http {
+			tls
+			tls_insecure_skip_verify
+		}
+	}
+}
+```
+Run docker
+```
+sudo systemctl disable systemd-resolved
+sudo systemctl stop systemd-resolved
+sudo docker compose up -d
+```
 
 -Configure Router DHCP DNS to use PiHole
+set the VM IP hosting pihole as your DHCPs DNS service, all future VMs should use this IP for their DNS as well. You can check ip with `ip a | grep /24`
 
 Phase 2: Secure Access & Services
--Install wg-easy and caddy
 -Configure NameCheap DDNS
+Add A records for @, www, and vpn pointing at your home IP (whatismyip.com) and automatic
+Port forward on your router for IP 192.168.0.101 ports 80/80(TCP), 443/443(TCP), and 51820(USP)
+
 -Create Cloud Instance
+
 -Establish site-to-site VPN
 
 Phase 3: Centralized Monitoring
