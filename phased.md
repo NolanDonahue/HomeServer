@@ -55,7 +55,7 @@ icacls id_rsa /grant:r "<your user>":F
 ```
 
 -Setup Docker/PiHole
-Install Docker, Wireguard, and Caddy
+Install Docker
 ```
 sudo apt-get update && sudo apt-get upgrade -y
 
@@ -78,7 +78,6 @@ Create a .env file
 ```
 DOMAIN="domain.org"
 PIHOLE_WEB_PASS="password"
-WG_PASS="password"
 ```
 Create a docker-compose.yml file
 ```
@@ -89,85 +88,15 @@ services:
     ports:
       - "53:53/tcp"
       - "53:53/udp"
+      - "80:80/tcp"
     environment:
-      TZ: 'America/New_York'
+      TZ: "America/New_York"
       WEBPASSWORD: ${PIHOLE_WEB_PASS}
     volumes:
       - './etc-pihole/:/etc/pihole/'
-      - './etc-dnsmasq.d/:/etc/dnsmasq.d/'
+      - './etc-dsnmasq.d/:/etc/dnsmasq.d/'
     restart: unless-stopped
-    networks:
-      - backend_network # Connects to the internal network
-
-  wg-easy:
-    environment:
-      - WG_HOST=vpn.${DOMAIN}
-      - PASSWORD=${WG_PASS}
-    image: ghcr.io/wg-easy/wg-easy
-    container_name: wg-easy
-    hostname: wg-easy
-    volumes:
-      - ~/.wg-easy:/etc/wireguard
-    ports:
-      - "51820:51820/udp"
-      # REMOVED the port mapping for 51821 (the web UI).
-    restart: unless-stopped
-    cap_add:
-      - NET_ADMIN
-      - SYS_MODULE
-    sysctls:
-      - net.ipv4.ip_forward=1
-      - net.ipv4.conf.all.src_valid_mark=1
-    networks:
-      - vpn_network # A dedicated network for the VPN
-
-  caddy:
-    container_name: caddy
-    image: caddy
-    restart: unless-stopped
-    ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
-    volumes:
-      - $PWD/Caddyfile:/etc/caddy/Caddyfile
-      - caddy_data:/data
-      - caddy_config:/config
-    environment:
-      - DOMAIN=${DOMAIN}
-    networks:
-      - backend_network # Can communicate with pihole and other back-end services
-      - caddy_external # Can reach the host's network
-    
-volumes:
-  caddy_data:
-  caddy_config:
-
-networks:
-  backend_network: # For internal container communication
-    driver: bridge
-  caddy_external: # To connect Caddy to the host network
-    driver: bridge
-  vpn_network: # Dedicated to the VPN, for better isolation
-    driver: bridge
-```
-Create a Caddyfile
-```
-{$DOMAIN}, www.{$DOMAIN} {
-	root * /var/www/website/
-	file_server
-}
-pihole.{$DOMAIN} {
-  reverse_proxy pihole:80
-}
-pve.{$DOMAIN} {
-	reverse_proxy 192.168.0.100:8006 {
-		transport http {
-			tls
-			tls_insecure_skip_verify
-		}
-	}
-}
+    network_mode: host
 ```
 Run docker
 ```
@@ -179,6 +108,97 @@ sudo docker compose up -d
 -Configure Router DHCP DNS to use PiHole
 set the VM IP hosting pihole as your DHCPs DNS service, all future VMs should use this IP for their DNS as well. You can check ip with `ip a | grep /24`
 
+-Setup Caddy and Pihole
+Create a new VM and install docker
+create a docker-compose.yml
+```
+services:
+  wg-easy:
+    environment:
+      - WG_HOST=vpn.${DOMAIN}
+      - PASSWORD=${WG_PASS}
+    image: ghcr.io/wg-easy/wg-easy
+    container_name: wg-easy
+    hostname: wg-easy
+    volumes:
+      - ~/.wg-easy:/etc/wireguard
+    ports:
+      - "51820:51820/udp"
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv4.conf.all.src_valid_mark=1
+
+  caddy:
+    container_name: caddy
+    image: caddy:latest
+    restart: unless-stopped
+    ports:
+      - "80:80/tcp"
+      - "443:443/tcp"
+    volumes:
+      - $PWD/Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    environment:
+      - DOMAIN=${DOMAIN}
+
+volumes:
+  caddy_data:
+  caddy_config:
+```
+Create a Caddyfile
+```
+{
+    acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+}
+
+{$DOMAIN}, www.{$DOMAIN} {
+    root * /var/www/website/
+    file_server
+}
+
+pihole.{$DOMAIN} {
+    redir / /admin
+    reverse_proxy 192.168.0.101:80
+    tls internal
+}
+
+pve.{$DOMAIN} {
+    reverse_proxy 192.168.0.100:8006 {
+        transport http {
+            tls_insecure_skip_verify
+        }
+    }
+    tls internal
+}
+
+vpn.{$DOMAIN} {
+    reverse_proxy 192.168.0.102:51821
+    tls internal
+}
+```
+Fill out your .env
+```
+#Global
+DOMAIN="domain.org"
+
+#WireGuard
+WG_PASS="password"
+```
+Run these commands (edit the one to hash your wireguard password with what you want the password to be)
+```
+sudo docker compose pull
+sudo docker compose up -d
+sudo docker run --rm python sh -c "pip install bcrypt && python -c 'import bcrypt; print(bcrypt.hashpw(b\"password\", bcrypt.gensalt()).decode())'"
+```
+Copy and paste the password hash into the environment variable then run
+```
+sudo docker compose down --remove-orphans && sudo docker compose up -d
+```
 Phase 2: Secure Access & Services
 -Configure NameCheap DDNS
 Add A records for @, www, and vpn pointing at your home IP (whatismyip.com) and automatic
