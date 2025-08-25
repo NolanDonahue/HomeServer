@@ -2,6 +2,8 @@ DISCUSSIONS
 Why Are We Doing This?
 1. Why are we using vpn.${DOMAIN} for the WG_HOST?
   It employs NameCheaps baked in DDNS to bypass any IPV4 issues if our routers IP Address changes. Because the A Records will automatically update, both wg-easy and caddy will be unaffected because the services they point to are maintained by NameCheaps DDNS
+2. Why are we comfortable using OPNSense for routing over a HomeServer NIC with no clusters for redundancy?
+   Because we will have the TPLink router running in access point mode, it is trivial to switch the mode back and plug it in during any kind of issue with the home server which will allow us to regain network functions. Plus, clustering is expensive and I don't want to buy more computers right now :( But one day...
 
 Problems
 1. A Records and security
