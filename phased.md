@@ -1,3 +1,12 @@
+DISCUSSIONS
+Why Are We Doing This?
+1. Why are we using vpn.${DOMAIN} for the WG_HOST?
+  It employs NameCheaps baked in DDNS to bypass any IPV4 issues if our routers IP Address changes. Because the A Records will automatically update, both wg-easy and caddy will be unaffected because the services they point to are maintained by NameCheaps DDNS
+
+Problems
+1. A Records and security
+   During the process of recreating my HomeLab with an increased focus on security I misunderstood that A Records exposed my services to the internet in an unsecure way. But, obfuscation is not security and the methods used should be secure even if the world knows who and where you are. This was a great moment to redefine how I interacted with updating and maintaining the security of the lab. It also took a week of breaking everything to come to this realization!
+
 Phase 1: Foundations
 -Install Proxmox
 Use Rufus to create a boot drive.
