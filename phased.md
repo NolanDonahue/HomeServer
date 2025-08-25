@@ -85,13 +85,13 @@ services:
   pihole:
     container_name: pihole
     image: pihole/pihole:latest
-    ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "80:80/tcp"
     environment:
       TZ: "America/New_York"
       WEBPASSWORD: ${PIHOLE_WEB_PASS}
+      PIHOLE_DNS: 1.1.1.1, 9.9.9.9
+      VIRTUAL_HOST: pihole.nolandonahue.org
+      WEBTHEME: default-dark
+      PIHOLE_DOMAIN: lan
     volumes:
       - './etc-pihole/:/etc/pihole/'
       - './etc-dsnmasq.d/:/etc/dnsmasq.d/'
@@ -108,7 +108,14 @@ sudo docker compose up -d
 -Configure Router DHCP DNS to use PiHole
 set the VM IP hosting pihole as your DHCPs DNS service, all future VMs should use this IP for their DNS as well. You can check ip with `ip a | grep /24`
 
--Setup Caddy and Pihole
+-Configure NameCheap DDNS
+Add A records for @, www, budget, pve, pihole, and vpn pointing at your home IP (whatismyip.com) and automatic
+Port forward on your router for IP 192.168.0.102 ports 80/80(TCP), 443/443(TCP), and 51820(USP)
+
+-Configure PiHole
+Use Pihole Local DNS to point your services from your subdomains to caddy for reverse proxy, you will point subdomain.your.domain to 192.168.0.102. Your subdomains should be www, your.domain, vpn, pve, budget, pihole
+
+-Setup Caddy and wg-easy
 Create a new VM and install docker
 create a docker-compose.yml
 ```
@@ -116,14 +123,18 @@ services:
   wg-easy:
     environment:
       - WG_HOST=vpn.${DOMAIN}
-      - PASSWORD=${WG_PASS}
-    image: ghcr.io/wg-easy/wg-easy
+      - PASSWORD_HASH=${WG_PASS}
+      - INSECURE=true
+      - WG_ALLOWED_IPS=10.8.0.0/24, 192.168.0.0/24
+      - WG_DEFAULT_DNS="192.168.0.101"
+    image: ghcr.io/wg-easy/wg-easy:latest
     container_name: wg-easy
     hostname: wg-easy
     volumes:
       - ~/.wg-easy:/etc/wireguard
     ports:
       - "51820:51820/udp"
+      - "51821:51821/tcp"
     restart: unless-stopped
     cap_add:
       - NET_ADMIN
@@ -131,53 +142,63 @@ services:
     sysctls:
       - net.ipv4.ip_forward=1
       - net.ipv4.conf.all.src_valid_mark=1
-
+    networks:
+      - wg_network
   caddy:
     container_name: caddy
     image: caddy:latest
     restart: unless-stopped
-    ports:
-      - "80:80/tcp"
-      - "443:443/tcp"
+    network_mode: host
     volumes:
       - $PWD/Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
+      - ./website:/srv
     environment:
       - DOMAIN=${DOMAIN}
-
+    dns:  
+      - 8.8.8.8
 volumes:
   caddy_data:
+    name: caddy_data
   caddy_config:
+    name: caddy_config
+networks:
+  wg_network:
+    name: wg_network
+    driver: bridge
 ```
-Create a Caddyfile
+Create a Caddyfile #TODO This is a temporary testing Caddyfile where removing the general block will use let's encrypt, then remove the commented area
 ```
 {
+    debug
     acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
 }
-
 {$DOMAIN}, www.{$DOMAIN} {
-    root * /var/www/website/
+    root * /srv
     file_server
-}
-
-pihole.{$DOMAIN} {
-    redir / /admin
-    reverse_proxy 192.168.0.101:80
     tls internal
 }
-
+pihole.{$DOMAIN} {
+    redir / /admin
+    reverse_proxy http://192.168.0.101:80
+    tls internal
+}
 pve.{$DOMAIN} {
-    reverse_proxy 192.168.0.100:8006 {
+    reverse_proxy https://192.168.0.100:8006 {
+        #Only use during timeout of let's encrypt
+        header_up Host {http.request.host}
+        header_up X-Forwarded-Proto {http.request.scheme}
+        header_up X-Forwarded-For {http.request.remote}
+        #End let's encrypt timeout use case
         transport http {
             tls_insecure_skip_verify
         }
     }
     tls internal
 }
-
 vpn.{$DOMAIN} {
-    reverse_proxy 192.168.0.102:51821
+    reverse_proxy http://192.168.0.102:51821
     tls internal
 }
 ```
@@ -185,25 +206,26 @@ Fill out your .env
 ```
 #Global
 DOMAIN="domain.org"
-
 #WireGuard
-WG_PASS="password"
+WG_PASS="hashed_password"
 ```
 Run these commands (edit the one to hash your wireguard password with what you want the password to be)
 ```
+sudo ufw allow 51820 #Only for Wg-Easy system
+sudo ufw allow from 192.168.0.0/24 to any port 22
+sudo ufw allow from 10.8.0.0/24 to any port 22 #Replace 10.8.0.0 with the wireguard internal IP you use
+sudo ufw allow 80
+sudo ufw allow 443
+sudo ufw enable
 sudo docker compose pull
 sudo docker compose up -d
-sudo docker run --rm python sh -c "pip install bcrypt && python -c 'import bcrypt; print(bcrypt.hashpw(b\"password\", bcrypt.gensalt()).decode())'"
+sudo docker run --rm python sh -c "pip install bcrypt && python -c 'import bcrypt; print(bcrypt.hashpw(b\"password\", bcrypt.gensalt()).decode())'" #this will generate the hashed WG password edit it to use your desired password
 ```
 Copy and paste the password hash into the environment variable then run
 ```
 sudo docker compose down --remove-orphans && sudo docker compose up -d
 ```
 Phase 2: Secure Access & Services
--Configure NameCheap DDNS
-Add A records for @, www, and vpn pointing at your home IP (whatismyip.com) and automatic
-Port forward on your router for IP 192.168.0.101 ports 80/80(TCP), 443/443(TCP), and 51820(USP)
-
 -Create Cloud Instance
 
 -Establish site-to-site VPN
