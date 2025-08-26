@@ -225,7 +225,7 @@ Run these commands (edit the one to hash your wireguard password with what you w
 sudo ufw allow 51820 #Only for Wg-Easy system
 sudo ufw allow from 192.168.0.0/24 to any port 22
 sudo ufw allow from 10.8.0.0/24 to any port 22 #Replace 10.8.0.0 with the wireguard internal IP you use
-sudo ufw allow from 172.0.0.0/16 to any port 22 #Replace with the docker internal IPs that wg-easy will use. You can test this by using sudo ufw all 22 and reading the logs from sudo journalctl -u ssh -f when you connect in via ssh from your client
+sudo ufw allow from 172.16.0.0/12 to any port 22 #Replace with the docker internal IPs that wg-easy will use. You can test this by using sudo ufw all 22 and reading the logs from sudo journalctl -u ssh -f when you connect in via ssh from your client
 sudo ufw allow 80
 sudo ufw allow 443
 sudo ufw enable
