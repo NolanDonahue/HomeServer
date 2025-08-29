@@ -6,94 +6,58 @@
 ---
 
 - [Hardware](#hardware)
-  - [Testbench](#testbench)
-  - [Production](#production)
-  - [Router and Network](#router-and-network)
-- [Network and Environment](#network-and-environment)
+  - [Server](#server)
+  - [Access Point](#access-point)
+  - [Switch](#switch)
+- [Network](#network)
   - [Structure](#structure)
-- [Program List](#program-list)
-  - [Host](#host)
-  - [VPN](#vpn)
-  - [FileShare](#fileshare)
-  - [ReverseProxy/Hosting](#reverseproxyhosting)
-- [Future Plans](#future-plans)
+- [Software](#software)
+  - [Hypervisor](#hypervisor)
+  - [Router](#router)
 - [Related Projects](#related-projects)
 - [License](#license)
 
-
 # Hardware
 
-![Network](docs/assets/HomeLab.drawio.svg)
-
-## Testbench
-
-Acer Swift 5
-8gb Ram
-256gb SSD
-
-## Production
+## Server
 
 Dell Vostro 3670
 i3-8100 @3.6ghz (1 socket, 4 core)
-16gb Ram (DDR4, 2666)
+32gb Ram (DDR4, 2666)
+Intel 82576 NIC (2x1gb)
 500gb NVME
 1tb HDD
 
-## Router and Network
+## Access Point
 
-TP-Link AX55 AC3000
-TP-Link 5port 1gb switch
+TP-Link AX55 AC3000 set to Access Point Mode
 
-# Network and Environment
+## Switch
 
-Currently using a TP-Link AX55 AC3000 with the goal of switching to OpnSense in the future to create VLANs
+TP-Link 5 Port 1gb Unmanaged Switch
+
+# Network
+
+![Network](docs/assets/Network.drawio.svg)
 
 ## Structure
-```
-SWIFT Development Environment                         MAIN Production Environment
-192.168.0.15x/24 Network                              192.168.9.10x/24 Network
-├── 🔵 Proxmox - 192.168.0.150/24                    ├── 🔵 Proxmox - 192.168.0.100/24
-├── 🟢 VPN - 192.168.151/24                          ├── 🟢 VPN - 192.168.101/24  
-├── 🔴 FileShare - 192.168.0.152/24                  ├── 🔴 Docker - 192.168.0.102/24 
-└── 🟠 ReverseProxy/Hosting - 192.168.0.153/24       └── 🟠 HomeAssistant (OS) - 192.168.0.103/24 
-    
-```
 
-# Program List
+In the short term I am running a simple network without VLANs. I plan to implement VLANs to increase network security.
 
-## Host
-Proxmox hosting Ubuntu Server VMs with LVM-Thin storage
+# Software
 
-## VPN
-WireGuard from CLI
+![Software](docs/assets/Server.drawio.svg)
 
-## FileShare
-Samba from Docker Compose
+## Hypervisor
 
-## ReverseProxy/Hosting
-Caddy from CLI
-Website files for self hosting
-HomePage from Docker Compose
+Proxmox is running as the hypervisor and backup solution with remote backups stored in an Oracle Cloud Instance and local Desktop
 
-# Future Plans
-## Cloud Services
-Create a free account on either AWS, Azure, or Google Cloud and host a light machine with the website host files
-- Learning cloud storage, CDN, cloud security
-- Create a cloud backup of the proxmox instance
+## Router
 
-## Monitoring
-Employ Prometheus and Grafana via Docker to scrape metrics
-- Prometheus to watch server metrics
-- Grafana to watch hardware metrics
-
-## Security Scans
-Employ Nmap to scan my network
-Employ Lynis or OpenVAS for security auditing
-
-## Ansible
-Build Ansible for an Infrastructure as Code approach
+OPNsense is running as the router for the network using Unbound DNS with Hagezi blocklists. It handles the reverse proxy service using HA Proxy, the Certificate Authority service using ACME Client, and the VPN service using OpenVPN.
 
 # Related Projects
+
 - [sfcal/homelab](https://github.com/sfcal/homelab) - The best homelab tech support on the WWW
 
 # License
